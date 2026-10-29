@@ -48,7 +48,7 @@ describe('Cynbit Hardened Backend Reference Architecture', () => {
     assert.match(csp, /script-src 'nonce-[A-Za-z0-9+/=]+'/);
     assert.doesNotMatch(csp, /unsafe-inline/);
     const htmlBody = await htmlRes.text();
-    assert.match(htmlBody, /Cynbit — Hardened Backend Reference Architecture/);
+    assert.match(htmlBody, /Cynbit Security &amp; Backend Architecture Console/);
 
     const jsonRes = await fetch(`${baseUrl}/`, {
       headers: { Accept: 'application/json' },
