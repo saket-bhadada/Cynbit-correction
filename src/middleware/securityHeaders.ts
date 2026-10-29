@@ -97,7 +97,7 @@ export function createSecurityHeadersMiddleware(): RequestHandler[] {
 
 /**
  * Builds a strict, allowlist-driven CORS middleware that:
- * 1. Permits server-to-server / same-origin requests lacking an `Origin` header.
+ * 1. Permits server-to-server or same-origin requests (including same-host browser POSTs).
  * 2. Echoes the exact matched `Origin` with `Vary: Origin` to prevent CDN cache poisoning.
  * 3. Rejects unauthorized cross-origin requests with a deterministic 403 Problem Details error.
  */
@@ -108,59 +108,73 @@ export function createCorsMiddleware(options: SecurityMiddlewareOptions = {}): R
   const allowCredentials = options.allowCredentials ?? true;
   const maxAge = options.preflightMaxAgeSeconds ?? 600;
 
-  const corsOptions: CorsOptions = {
-    origin(requestOrigin, callback) {
-      // Non-browser or same-origin navigation requests do not include an Origin header
-      if (!requestOrigin) {
-        callback(null, false);
-        return;
-      }
-
-      const normalized = requestOrigin.replace(/\/+$/, '');
-      if (allowedOriginSet.has(normalized)) {
-        callback(null, true);
-        return;
-      }
-
-      callback(
-        new AppError({
-          status: 403,
-          code: 'cors-origin-denied',
-          title: 'Cross-Origin Request Denied',
-          detail: 'The requesting Origin is not authorized by the server CORS policy.',
-        }),
-      );
-    },
-    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: [
-      'Accept',
-      'Authorization',
-      'Content-Type',
-      'If-None-Match',
-      'Idempotency-Key',
-      'X-Request-ID',
-    ],
-    exposedHeaders: [
-      'ETag',
-      'Idempotency-Replayed',
-      'RateLimit-Limit',
-      'RateLimit-Policy',
-      'RateLimit-Remaining',
-      'RateLimit-Reset',
-      'Retry-After',
-      'X-Request-ID',
-    ],
-    credentials: allowCredentials,
-    maxAge,
-    optionsSuccessStatus: 204,
-  };
-
   const ensureVaryOrigin: RequestHandler = (_req: Request, res: Response, next: NextFunction) => {
     res.vary('Origin');
     next();
   };
 
-  const configuredCors = cors(corsOptions);
+  const configuredCors = cors((req: Request, callback) => {
+    const requestOrigin = req.header('origin');
+
+    // Non-browser or same-origin GET/HEAD navigation requests do not include an Origin header
+    if (!requestOrigin) {
+      callback(null, { origin: false });
+      return;
+    }
+
+    const normalized = requestOrigin.replace(/\/+$/, '');
+
+    // Check if the browser Origin matches the server's own Host header (same-origin POST/PUT/DELETE)
+    const hostHeader = req.header('x-forwarded-host') ?? req.header('host');
+    let isSameHost = false;
+    if (hostHeader) {
+      try {
+        const parsedOrigin = new URL(normalized);
+        isSameHost = parsedOrigin.host.toLowerCase() === hostHeader.split(',')[0]?.trim().toLowerCase();
+      } catch {
+        isSameHost = false;
+      }
+    }
+
+    if (isSameHost || allowedOriginSet.has(normalized)) {
+      const corsOptions: CorsOptions = {
+        origin: true,
+        methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        allowedHeaders: [
+          'Accept',
+          'Authorization',
+          'Content-Type',
+          'If-None-Match',
+          'Idempotency-Key',
+          'X-Request-ID',
+        ],
+        exposedHeaders: [
+          'ETag',
+          'Idempotency-Replayed',
+          'RateLimit-Limit',
+          'RateLimit-Policy',
+          'RateLimit-Remaining',
+          'RateLimit-Reset',
+          'Retry-After',
+          'X-Request-ID',
+        ],
+        credentials: allowCredentials,
+        maxAge,
+        optionsSuccessStatus: 204,
+      };
+      callback(null, corsOptions);
+      return;
+    }
+
+    callback(
+      new AppError({
+        status: 403,
+        code: 'cors-origin-denied',
+        title: 'Cross-Origin Request Denied',
+        detail: 'The requesting Origin is not authorized by the server CORS policy.',
+      }),
+    );
+  });
 
   return (req: Request, res: Response, next: NextFunction): void => {
     ensureVaryOrigin(req, res, () => {

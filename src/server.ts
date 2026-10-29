@@ -1,4 +1,4 @@
-import Redis from 'ioredis';
+import type Redis from 'ioredis';
 import { createApp } from './app';
 import {
   MemorySlidingWindowStore,
@@ -13,7 +13,10 @@ let redisClient: Redis | undefined;
 let rateLimitStore: RateLimitStore;
 
 if (redisUrl) {
-  redisClient = new Redis(redisUrl, {
+  // Lazy-require ioredis only when REDIS_URL is explicitly configured
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const IORedis = require('ioredis') as typeof import('ioredis').default;
+  redisClient = new IORedis(redisUrl, {
     maxRetriesPerRequest: 1,
     enableOfflineQueue: false,
   });
@@ -22,43 +25,55 @@ if (redisUrl) {
   rateLimitStore = new MemorySlidingWindowStore();
 }
 
-const app = createApp({
+export const app = createApp({
   rateLimitStore,
 });
 
-const server = app.listen(port, () => {
-  console.log(
-    JSON.stringify({
-      level: 'info',
-      event: 'server_started',
-      port,
-      rateLimitBackend: redisUrl ? 'redis' : 'memory',
-      timestamp: new Date().toISOString(),
-    }),
-  );
-});
+export default app;
 
-async function shutdown(signal: string): Promise<void> {
-  console.log(
-    JSON.stringify({
-      level: 'info',
-      event: 'server_shutting_down',
-      signal,
-      timestamp: new Date().toISOString(),
-    }),
-  );
-
-  server.close(async () => {
-    if (redisClient) {
-      await redisClient.quit().catch(() => undefined);
-    }
-    process.exit(0);
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = Object.assign(app, module.exports, {
+    default: app,
+    app,
   });
 }
 
-process.on('SIGINT', () => {
-  void shutdown('SIGINT');
-});
-process.on('SIGTERM', () => {
-  void shutdown('SIGTERM');
-});
+// Only bind a local TCP listener when running outside serverless environments (e.g., not on Vercel)
+if (!process.env.VERCEL && require.main === module) {
+  const server = app.listen(port, () => {
+    console.log(
+      JSON.stringify({
+        level: 'info',
+        event: 'server_started',
+        port,
+        rateLimitBackend: redisUrl ? 'redis' : 'memory',
+        timestamp: new Date().toISOString(),
+      }),
+    );
+  });
+
+  const shutdown = async (signal: string): Promise<void> => {
+    console.log(
+      JSON.stringify({
+        level: 'info',
+        event: 'server_shutting_down',
+        signal,
+        timestamp: new Date().toISOString(),
+      }),
+    );
+
+    server.close(async () => {
+      if (redisClient) {
+        await redisClient.quit().catch(() => undefined);
+      }
+      process.exit(0);
+    });
+  };
+
+  process.on('SIGINT', () => {
+    void shutdown('SIGINT');
+  });
+  process.on('SIGTERM', () => {
+    void shutdown('SIGTERM');
+  });
+}
