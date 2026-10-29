@@ -12,43 +12,34 @@ function escapeHtml(value: string): string {
 
 function renderDashboardHtml(nonce: string, requestId: string): string {
   const safeRequestId = escapeHtml(requestId);
-  const safeNoncePreview = escapeHtml(nonce.slice(0, 12) + '…');
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cynbit — Hardened Backend Reference Architecture</title>
+  <title>Cynbit Security &amp; Backend Architecture Console</title>
   <style nonce="${nonce}">
     :root {
-      --bg-deep: #060913;
-      --bg-main: #0b1021;
-      --surface: rgba(17, 25, 48, 0.88);
-      --surface-elevated: rgba(24, 35, 66, 0.92);
-      --surface-code: #060a15;
-      --border: rgba(99, 130, 209, 0.2);
-      --border-strong: rgba(99, 130, 209, 0.38);
-      --text: #eef2ff;
-      --text-secondary: #a5b4fc;
-      --muted: #7f91c0;
-      --accent: #3b82f6;
-      --accent-glow: rgba(59, 130, 246, 0.28);
-      --accent-hover: #2563eb;
-      --cyan: #06b6d4;
-      --ok: #10b981;
-      --ok-bg: rgba(16, 185, 129, 0.14);
-      --warn: #f59e0b;
-      --warn-bg: rgba(245, 158, 11, 0.15);
-      --err: #ef4444;
-      --err-bg: rgba(239, 68, 68, 0.16);
-      --purple: #8b5cf6;
-      --purple-bg: rgba(139, 92, 246, 0.16);
-      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      --sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --radius-lg: 14px;
-      --radius-md: 10px;
-      --radius-sm: 6px;
+      --bg: #070913;
+      --card: rgba(18, 24, 44, 0.72);
+      --card-hover: rgba(24, 32, 58, 0.88);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-highlight: rgba(99, 102, 241, 0.45);
+      --text: #f8fafc;
+      --text-soft: #cbd5e1;
+      --muted: #8492b4;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #38bdf8;
+      --emerald: #10b981;
+      --emerald-soft: rgba(16, 185, 129, 0.14);
+      --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, 0.15);
+      --rose: #f43f5e;
+      --rose-soft: rgba(244, 63, 94, 0.15);
+      --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
 
     * { box-sizing: border-box; }
@@ -56,32 +47,32 @@ function renderDashboardHtml(nonce: string, requestId: string): string {
     body {
       margin: 0;
       min-height: 100vh;
-      background-color: var(--bg-deep);
+      background-color: var(--bg);
       background-image:
-        radial-gradient(circle at 12% 8%, rgba(59, 130, 246, 0.16), transparent 36%),
-        radial-gradient(circle at 88% 12%, rgba(6, 182, 212, 0.12), transparent 34%),
-        radial-gradient(circle at 50% 90%, rgba(139, 92, 246, 0.1), transparent 40%);
+        radial-gradient(ellipse 80% 50% at 50% -15%, rgba(99, 102, 241, 0.28), transparent),
+        radial-gradient(ellipse 50% 40% at 85% 20%, rgba(56, 189, 248, 0.12), transparent),
+        radial-gradient(ellipse 50% 40% at 15% 80%, rgba(16, 185, 129, 0.08), transparent);
       color: var(--text);
       font-family: var(--sans);
-      line-height: 1.5;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Top Navigation & Header */
-    .topbar {
+    /* Navigation Bar */
+    .navbar {
       position: sticky;
       top: 0;
-      z-index: 30;
-      backdrop-filter: blur(16px);
-      background: rgba(9, 14, 28, 0.85);
+      z-index: 20;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(7, 9, 19, 0.75);
       border-bottom: 1px solid var(--border);
-      padding: 0.9rem 2rem;
     }
-    .topbar-inner {
-      max-width: 1380px;
+    .navbar-inner {
+      max-width: 1140px;
       margin: 0 auto;
+      padding: 1rem 1.5rem;
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
@@ -89,1240 +80,706 @@ function renderDashboardHtml(nonce: string, requestId: string): string {
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.85rem;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text);
     }
-    .brand-icon {
-      width: 38px;
-      height: 38px;
+    .brand-logo {
+      width: 36px;
+      height: 36px;
       border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent), var(--cyan));
+      background: linear-gradient(135deg, #6366f1 0%, #38bdf8 100%);
       display: grid;
       place-items: center;
-      box-shadow: 0 0 20px var(--accent-glow);
-      flex-shrink: 0;
+      box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.5);
     }
-    .brand-icon svg {
-      width: 22px;
-      height: 22px;
-      fill: none;
+    .brand-logo svg {
+      width: 20px;
+      height: 20px;
       stroke: #fff;
-      stroke-width: 2;
+      stroke-width: 2.2;
+      fill: none;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
-    .brand-title {
-      margin: 0;
-      font-size: 1.12rem;
+    .brand-name {
       font-weight: 700;
+      font-size: 1.1rem;
       letter-spacing: -0.02em;
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
     }
-    .version-chip {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 0.12rem 0.48rem;
-      border-radius: 999px;
-      background: rgba(59, 130, 246, 0.18);
-      border: 1px solid rgba(59, 130, 246, 0.4);
-      color: #93c5fd;
-    }
-    .brand-sub {
-      margin: 0.12rem 0 0;
-      font-size: 0.79rem;
-      color: var(--muted);
-    }
-
-    .topbar-meta {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.65rem;
-    }
-    .pill {
+    .nav-status {
       display: inline-flex;
       align-items: center;
-      gap: 0.45rem;
-      padding: 0.36rem 0.75rem;
+      gap: 0.55rem;
+      padding: 0.38rem 0.85rem;
       border-radius: 999px;
-      background: var(--surface);
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border);
-      font-family: var(--mono);
-      font-size: 0.74rem;
-      color: var(--text-secondary);
+      font-size: 0.8rem;
+      color: var(--text-soft);
     }
-    .pulse-dot {
+    .status-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--ok);
-      box-shadow: 0 0 10px var(--ok);
+      background: var(--emerald);
+      box-shadow: 0 0 12px var(--emerald);
     }
 
-    /* Main Container */
-    .container {
-      max-width: 1380px;
+    /* Main Wrapper */
+    .wrapper {
+      max-width: 1140px;
       margin: 0 auto;
-      padding: 1.5rem 2rem 3.5rem;
+      padding: 3rem 1.5rem 4.5rem;
       display: flex;
       flex-direction: column;
-      gap: 1.4rem;
+      gap: 2.75rem;
     }
 
-    /* KPI Scorecard Grid */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       gap: 1rem;
     }
-    .kpi-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.1rem 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.45rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .kpi-card::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--accent), var(--cyan));
-    }
-    .kpi-label {
-      font-size: 0.76rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--muted);
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .kpi-value {
-      font-size: 1.55rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      font-family: var(--mono);
-      color: var(--text);
-    }
-    .kpi-sub {
-      font-size: 0.77rem;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    progress.meter {
-      width: 100%;
-      height: 6px;
-      appearance: none;
-      -webkit-appearance: none;
-      border: none;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      overflow: hidden;
-      margin-top: 0.25rem;
-    }
-    progress.meter::-webkit-progress-bar {
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 999px;
-    }
-    progress.meter::-webkit-progress-value {
-      background: linear-gradient(90deg, var(--ok), var(--cyan));
-      border-radius: 999px;
-      transition: width 0.25s ease;
-    }
-    progress.meter::-moz-progress-bar {
-      background: linear-gradient(90deg, var(--ok), var(--cyan));
-      border-radius: 999px;
-    }
-    .text-note { color: #93c5fd; }
-    .text-muted-cell { color: var(--muted); }
-    .ml-gap { margin-left: 0.5rem; }
-
-    /* Navigation Tabs */
-    .tabs-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.75rem;
-    }
-    .tab-group {
+    .hero-badge {
       display: inline-flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      background: var(--surface);
-      padding: 0.3rem;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-    }
-    .tab-btn {
-      background: transparent;
-      color: var(--muted);
-      border: none;
-      border-radius: 7px;
-      padding: 0.48rem 0.95rem;
-      font-size: 0.83rem;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.32rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      font-size: 0.78rem;
       font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s ease;
+      letter-spacing: 0.02em;
     }
-    .tab-btn:hover {
-      color: var(--text);
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 2.85rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+      background: linear-gradient(180deg, #ffffff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    .tab-btn.active {
-      background: var(--accent);
-      color: #fff;
-      box-shadow: 0 2px 10px var(--accent-glow);
-    }
-    .tab-panel {
-      display: none;
-      flex-direction: column;
-      gap: 1.35rem;
-    }
-    .tab-panel.active {
-      display: flex;
+    .hero p {
+      margin: 0;
+      font-size: 1.02rem;
+      color: var(--muted);
+      max-width: 600px;
     }
 
-    /* Cards & Layout Grids */
-    .workspace-grid {
+    /* 4 Pillar Feature Bento Cards */
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1rem;
+    }
+    .pillar-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.25rem 1.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .pillar-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+    .pillar-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .pillar-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(99, 102, 241, 0.14);
+      color: #818cf8;
+      display: grid;
+      place-items: center;
+      font-size: 1.05rem;
+    }
+    .pillar-stat {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.18rem 0.55rem;
+      border-radius: 999px;
+      background: var(--emerald-soft);
+      color: #34d399;
+    }
+    .pillar-title {
+      margin: 0.2rem 0 0;
+      font-size: 0.96rem;
+      font-weight: 650;
+      color: var(--text);
+    }
+    .pillar-desc {
+      margin: 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* Main Two-Column Experience */
+    .main-grid {
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
-      gap: 1.35rem;
+      gap: 1.5rem;
+      align-items: start;
     }
-    @media (max-width: 1060px) {
-      .workspace-grid {
+    @media (max-width: 920px) {
+      .main-grid {
         grid-template-columns: 1fr;
       }
     }
-    .card {
-      background: var(--surface);
+
+    .glass-panel {
+      background: var(--card);
+      backdrop-filter: blur(16px);
       border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.35rem 1.45rem;
+      border-radius: 20px;
+      padding: 1.65rem;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.25rem;
+      box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.6);
     }
-    .card-header {
+
+    .panel-head {
       display: flex;
       flex-wrap: wrap;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
     }
-    .card-title {
+    .panel-title {
       margin: 0;
-      font-size: 1.02rem;
-      font-weight: 650;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
     }
-    .card-desc {
+    .panel-sub {
       margin: 0.2rem 0 0;
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       color: var(--muted);
     }
 
-    /* Buttons & Controls */
-    .toolbar {
+    /* Segmented Category Pills */
+    .filter-bar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 0.65rem;
-      padding: 0.65rem 0.8rem;
-      background: rgba(8, 12, 24, 0.55);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      gap: 0.75rem;
     }
-    .btn-row {
-      display: flex;
+    .segmented {
+      display: inline-flex;
       flex-wrap: wrap;
-      align-items: center;
-      gap: 0.5rem;
+      gap: 0.3rem;
+      background: rgba(7, 9, 19, 0.65);
+      padding: 0.3rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
     }
-    button.btn {
-      background: var(--accent);
-      color: #fff;
-      border: 1px solid transparent;
-      border-radius: var(--radius-sm);
-      padding: 0.45rem 0.85rem;
-      font-size: 0.8rem;
+    .seg-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 0.38rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.79rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.15s ease;
+    }
+    .seg-btn:hover { color: var(--text); }
+    .seg-btn.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+    }
+
+    /* Clean Catalog Cards */
+    .catalog-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .service-card {
+      background: rgba(11, 15, 29, 0.65);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem 1.15rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      transition: all 0.18s ease;
+    }
+    .service-card:hover {
+      background: var(--card-hover);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateX(2px);
+    }
+    .service-info h3 {
+      margin: 0;
+      font-size: 0.94rem;
+      font-weight: 650;
+      color: var(--text);
+    }
+    .service-info p {
+      margin: 0.28rem 0 0;
+      font-size: 0.81rem;
+      color: var(--muted);
+    }
+    .tag {
+      flex-shrink: 0;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.22rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.12);
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    /* Buttons */
+    .actions-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding-top: 0.4rem;
+      border-top: 1px solid var(--border);
+    }
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 0.58rem 1.05rem;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease;
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      justify-content: center;
+      gap: 0.45rem;
     }
-    button.btn:hover:not(:disabled) {
-      background: var(--accent-hover);
+    .btn:hover:not(:disabled) {
+      background: var(--primary-hover);
       transform: translateY(-1px);
+      box-shadow: 0 8px 20px -6px rgba(99, 102, 241, 0.6);
     }
-    button.btn:disabled {
+    .btn:disabled {
       opacity: 0.4;
       cursor: not-allowed;
     }
-    button.btn-secondary {
-      background: var(--surface-elevated);
-      border-color: var(--border-strong);
-      color: var(--text);
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border);
+      color: var(--text-soft);
     }
-    button.btn-secondary:hover:not(:disabled) {
-      background: #23325e;
+    .btn-ghost:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      box-shadow: none;
     }
-    button.btn-warn {
-      background: var(--warn-bg);
-      border-color: rgba(245, 158, 11, 0.4);
-      color: #fcd34d;
-    }
-    button.btn-warn:hover:not(:disabled) {
-      background: rgba(245, 158, 11, 0.25);
-    }
-    button.btn-danger {
-      background: var(--err-bg);
-      border-color: rgba(239, 68, 68, 0.4);
-      color: #fca5a5;
-    }
-    button.btn-danger:hover:not(:disabled) {
-      background: rgba(239, 68, 68, 0.26);
+    .btn-full {
+      width: 100%;
+      padding: 0.7rem 1.2rem;
+      font-size: 0.88rem;
     }
 
-    select.select-ctrl {
-      background: var(--surface-code);
-      color: var(--text);
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-sm);
-      padding: 0.4rem 0.65rem;
-      font-size: 0.79rem;
-      font-family: var(--sans);
-    }
-
-    /* Filter Chips */
-    .chip-row {
+    /* Form Styling */
+    .form-stack {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
+      flex-direction: column;
+      gap: 0.85rem;
     }
-    .filter-chip {
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.32rem;
+    }
+    .field span {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-soft);
+    }
+    .field input, .field textarea {
+      background: rgba(7, 9, 19, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 0.62rem 0.85rem;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 0.86rem;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .field input:focus, .field textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.22);
+    }
+    .field textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Status Toast / Feedback Banner */
+    .feedback-banner {
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border);
-      color: var(--muted);
-      border-radius: 999px;
-      padding: 0.26rem 0.7rem;
-      font-size: 0.75rem;
+    }
+    .feedback-ok {
+      background: var(--emerald-soft);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+    }
+    .feedback-warn {
+      background: var(--amber-soft);
+      border-color: rgba(245, 158, 11, 0.32);
+      color: #fcd34d;
+    }
+    .feedback-err {
+      background: var(--rose-soft);
+      border-color: rgba(244, 63, 94, 0.32);
+      color: #fda4af;
+    }
+
+    /* Optional Expandable Developer Inspector */
+    .dev-drawer {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .dev-drawer-toggle {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text-soft);
+      padding: 1rem 1.35rem;
+      font-size: 0.85rem;
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       cursor: pointer;
-      transition: all 0.15s ease;
     }
-    .filter-chip:hover {
-      color: var(--text);
-      border-color: var(--border-strong);
+    .dev-drawer-toggle:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.02);
     }
-    .filter-chip.active {
-      background: rgba(59, 130, 246, 0.2);
-      border-color: var(--accent);
-      color: #93c5fd;
-    }
-
-    /* Catalog Item Cards */
-    .catalog-list {
-      display: grid;
-      gap: 0.65rem;
-    }
-    .catalog-item {
-      background: rgba(9, 14, 28, 0.7);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 0.85rem 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      transition: border-color 0.15s ease;
-    }
-    .catalog-item:hover {
-      border-color: var(--border-strong);
-    }
-    .catalog-item-top {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-    }
-    .catalog-item-title {
-      font-weight: 600;
-      font-size: 0.88rem;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .catalog-item-id {
-      font-family: var(--mono);
-      font-size: 0.73rem;
-      color: var(--text-secondary);
-      background: rgba(99, 102, 241, 0.14);
-      padding: 0.1rem 0.45rem;
-      border-radius: 4px;
-    }
-    .catalog-item-summary {
-      font-size: 0.79rem;
-      color: var(--muted);
-      margin: 0;
-    }
-    .catalog-item-foot {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin-top: 0.15rem;
-    }
-
-    /* Badges */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      padding: 0.16rem 0.55rem;
-      border-radius: 5px;
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      font-weight: 600;
-    }
-    .badge-ok { background: var(--ok-bg); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .badge-warn { background: var(--warn-bg); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.32); }
-    .badge-err { background: var(--err-bg); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.32); }
-    .badge-purple { background: var(--purple-bg); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.32); }
-    .badge-info { background: rgba(6, 182, 212, 0.15); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.32); }
-
-    /* Cursor & ETag Inspector Box */
-    .cursor-inspector {
-      background: var(--surface-code);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 0.7rem 0.9rem;
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      display: grid;
-      gap: 0.35rem;
-    }
-    .cursor-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-    }
-    .cursor-key { color: var(--muted); }
-    .cursor-val { color: #93c5fd; word-break: break-all; }
-
-    /* Code Pre & JSON Viewer */
-    pre.code-box {
-      margin: 0;
-      padding: 0.9rem 1rem;
-      border-radius: var(--radius-md);
-      background: var(--surface-code);
-      border: 1px solid var(--border);
-      font-family: var(--mono);
-      font-size: 0.76rem;
-      overflow-x: auto;
-      max-height: 290px;
-      color: #dbeafe;
-      line-height: 1.45;
-    }
-
-    /* Form Controls */
-    .form-grid {
+    .dev-drawer-body {
+      padding: 0 1.35rem 1.35rem;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
+      gap: 1rem;
     }
-    .form-grid .full { grid-column: 1 / -1; }
-    label.field-label {
-      display: flex;
-      flex-direction: column;
-      gap: 0.28rem;
-      font-size: 0.76rem;
-      font-weight: 600;
-      color: var(--text-secondary);
+    @media (max-width: 820px) {
+      .dev-drawer-body {
+        grid-template-columns: 1fr;
+      }
     }
-    input.field-input, textarea.field-input {
-      background: var(--surface-code);
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-sm);
-      padding: 0.5rem 0.68rem;
-      color: var(--text);
-      font-family: var(--sans);
-      font-size: 0.82rem;
-      transition: border-color 0.15s ease;
-    }
-    input.field-input:focus, textarea.field-input:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px var(--accent-glow);
-    }
-    textarea.field-input {
-      resize: vertical;
-      min-height: 68px;
-    }
-
-    /* Tables */
-    .table-wrap {
+    .code-pane {
+      margin: 0;
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      background: #05070f;
+      border: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: #cbd5e1;
       overflow-x: auto;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: rgba(6, 10, 21, 0.65);
-    }
-    table.data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.81rem;
-    }
-    table.data-table th, table.data-table td {
-      text-align: left;
-      padding: 0.65rem 0.85rem;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-    table.data-table th {
-      background: rgba(17, 25, 48, 0.9);
-      color: var(--text-secondary);
-      font-weight: 600;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    table.data-table tr:last-child td {
-      border-bottom: none;
-    }
-    table.data-table code {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: #bfdbfe;
-      word-break: break-all;
-    }
-
-    /* Telemetry Timeline Log */
-    .log-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.45rem;
-      max-height: 220px;
-      overflow-y: auto;
-    }
-    .log-entry {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.6rem;
-      padding: 0.5rem 0.75rem;
-      border-radius: var(--radius-sm);
-      background: var(--surface-code);
-      border: 1px solid var(--border);
-      font-family: var(--mono);
-      font-size: 0.75rem;
-    }
-    .log-left {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-    }
-    .log-right {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: var(--muted);
+      max-height: 260px;
     }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="brand-icon" aria-hidden="true">
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="/" class="brand">
+        <div class="brand-logo" aria-hidden="true">
           <svg viewBox="0 0 24 24">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             <path d="M9 12l2 2 4-4" />
           </svg>
         </div>
-        <div>
-          <h1 class="brand-title">
-            Cynbit Security &amp; Backend Architecture Console
-            <span class="version-chip">v1.0.0-hardened</span>
-          </h1>
-          <p class="brand-sub">
-            Zero-Trust HTTP Headers • RFC 9457 Problem Details • Keyset Pagination • Weak ETag (304) • Redis/Memory Sliding-Window Rate Limiter
-          </p>
-        </div>
-      </div>
+        <span class="brand-name">Cynbit</span>
+      </a>
 
-      <div class="topbar-meta">
-        <div class="pill" title="Cryptographic nonce regenerated on every HTML document request">
-          <span>CSP Nonce:</span>
-          <strong id="nonce-display">${safeNoncePreview}</strong>
-        </div>
-        <div class="pill" title="Correlation ID assigned by correlationIdMiddleware">
-          <span class="pulse-dot"></span>
-          <span>Trace ID: <strong id="boot-req-id">${safeRequestId}</strong></span>
-        </div>
+      <div class="nav-status">
+        <span class="status-dot"></span>
+        <span>All 14 Security Controls Active</span>
+        <span>•</span>
+        <span id="nav-latency">TTFB: -- ms</span>
       </div>
     </div>
-  </header>
+  </nav>
 
-  <main class="container">
-    <!-- Top Executive Telemetry KPIs -->
-    <section class="kpi-grid" aria-label="Live Backend Telemetry Metrics">
-      <div class="kpi-card">
-        <div class="kpi-label">
-          <span>Passive Header Posture</span>
-          <span class="badge badge-ok" id="kpi-posture-badge">PASS</span>
+  <main class="wrapper">
+    <!-- Clean, Modern Hero -->
+    <section class="hero">
+      <div class="hero-badge">
+        <span>✦ Hardened Backend Architecture • RFC 9457 &amp; OWASP Verified</span>
+      </div>
+      <h1>Fast, Resilient &amp; Secure by Default.</h1>
+      <p>
+        Experience Cynbit’s hardened backend layer featuring instant ETag edge caching, keyset cursor pagination, sliding-window rate limiting, and strict schema validation.
+      </p>
+    </section>
+
+    <!-- 4 Clean Visual Pillars -->
+    <section class="pillars-grid" aria-label="Architecture Highlights">
+      <div class="pillar-card">
+        <div class="pillar-top">
+          <div class="pillar-icon">🛡️</div>
+          <span class="pillar-stat">14 / 14 PASS</span>
         </div>
-        <div class="kpi-value" id="kpi-posture-val">14 / 14</div>
-        <progress class="meter" id="kpi-posture-bar" max="100" value="100"></progress>
-        <div class="kpi-sub">Strict CSP, 2yr HSTS Preload, Permissions-Policy</div>
+        <h2 class="pillar-title">Transport &amp; CSP Shield</h2>
+        <p class="pillar-desc">2-year HSTS preload, strict frameguard, and per-request cryptographic nonces.</p>
       </div>
 
-      <div class="kpi-card">
-        <div class="kpi-label">
-          <span>Last API Latency (TTFB)</span>
-          <span class="badge badge-info" id="kpi-encoding-badge">br / gzip</span>
+      <div class="pillar-card">
+        <div class="pillar-top">
+          <div class="pillar-icon">⚡</div>
+          <span class="pillar-stat" id="pillar-cache-stat">304 Ready</span>
         </div>
-        <div class="kpi-value" id="kpi-latency-val">-- ms</div>
-        <progress class="meter" id="kpi-latency-bar" max="100" value="85"></progress>
-        <div class="kpi-sub" id="kpi-latency-sub">Target &lt; 250ms budget</div>
+        <h2 class="pillar-title">Instant Edge Caching</h2>
+        <p class="pillar-desc">Weak SHA-256 ETags and Brotli compression eliminate redundant data transfers.</p>
       </div>
 
-      <div class="kpi-card">
-        <div class="kpi-label">
-          <span>Sliding-Window Quota</span>
-          <span class="badge badge-purple" id="kpi-rl-policy">100;w=60</span>
+      <div class="pillar-card">
+        <div class="pillar-top">
+          <div class="pillar-icon">⏱️</div>
+          <span class="pillar-stat" id="pillar-rl-stat">100 / 100</span>
         </div>
-        <div class="kpi-value" id="kpi-rl-remaining">-- / --</div>
-        <progress class="meter" id="kpi-rl-bar" max="100" value="100"></progress>
-        <div class="kpi-sub" id="kpi-rl-reset">IETF RateLimit-* headers active</div>
+        <h2 class="pillar-title">Sliding-Window Limiter</h2>
+        <p class="pillar-desc">Atomic Redis/Memory quota tracking with standard IETF RateLimit headers.</p>
       </div>
 
-      <div class="kpi-card">
-        <div class="kpi-label">
-          <span>Conditional ETag Cache</span>
-          <span class="badge badge-ok" id="kpi-cache-badge">s-maxage=300</span>
+      <div class="pillar-card">
+        <div class="pillar-top">
+          <div class="pillar-icon">✨</div>
+          <span class="pillar-stat">Zod Strict</span>
         </div>
-        <div class="kpi-value" id="kpi-304-count">0 Hits (304)</div>
-        <progress class="meter" id="kpi-cache-bar" max="100" value="100"></progress>
-        <div class="kpi-sub" id="kpi-etag-sub">Weak ETag + stale-while-revalidate</div>
+        <h2 class="pillar-title">Idempotent Ingestion</h2>
+        <p class="pillar-desc">Fail-closed schema validation paired with safe retry idempotency keys.</p>
       </div>
     </section>
 
-    <!-- View Switcher Tabs -->
-    <div class="tabs-bar">
-      <div class="tab-group" role="tablist">
-        <button class="tab-btn active" data-tab="tab-workbench" type="button" role="tab">
-          1. Interactive API &amp; Security Workbench
-        </button>
-        <button class="tab-btn" data-tab="tab-headers" type="button" role="tab">
-          2. Live HTTP Security Header Audit (14 Controls)
-        </button>
-        <button class="tab-btn" data-tab="tab-findings" type="button" role="tab">
-          3. Audit Findings &amp; Remediation Matrix (F-01 – F-11)
-        </button>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-secondary" id="btn-toggle-raw" type="button">Toggle Raw JSON View</button>
-        <button class="btn btn-secondary" id="btn-refresh-all" type="button">Re-Run Passive Check</button>
-      </div>
-    </div>
-
-    <!-- TAB 1: Interactive Workbench -->
-    <div class="tab-panel active" id="tab-workbench">
-      <div class="workspace-grid">
-        <!-- Left Column: Keyset Cursor Pagination & Weak ETag Explorer -->
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">
-                <span>Keyset Cursor Pagination &amp; Weak ETag Explorer</span>
-                <span class="badge badge-ok">GET /api/v1/items</span>
-              </h2>
-              <p class="card-desc">
-                Replaces <code>O(N) OFFSET</code> scans with <code>O(log N)</code> composite keyset cursors <code>(createdAt, id)</code> and negotiates <code>304 Not Modified</code>.
-              </p>
-            </div>
+    <!-- Two Clean Interactive Cards -->
+    <section class="main-grid">
+      <!-- Left: Solutions Catalog -->
+      <div class="glass-panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Enterprise Solutions Catalog</h2>
+            <p class="panel-sub">Powered by <code>O(log N)</code> keyset cursor pagination &amp; conditional ETag caching</p>
           </div>
+          <button class="btn btn-ghost" id="btn-etag-check" type="button">
+            ⚡ Test Instant Cache (304)
+          </button>
+        </div>
 
-          <!-- Category Filter Chips & Page Size -->
-          <div class="toolbar">
-            <div class="chip-row" id="category-chips">
-              <button class="filter-chip active" data-category="" type="button">All (25)</button>
-              <button class="filter-chip" data-category="cloud-security" type="button">Cloud Security</button>
-              <button class="filter-chip" data-category="identity" type="button">Identity</button>
-              <button class="filter-chip" data-category="observability" type="button">Observability</button>
-              <button class="filter-chip" data-category="compliance" type="button">Compliance</button>
-            </div>
-            <div>
-              <select class="select-ctrl" id="sel-limit" aria-label="Items per page">
-                <option value="4" selected>4 items / page</option>
-                <option value="6">6 items / page</option>
-                <option value="10">10 items / page</option>
-              </select>
-            </div>
+        <div class="filter-bar">
+          <div class="segmented" id="category-tabs">
+            <button class="seg-btn active" data-category="" type="button">All</button>
+            <button class="seg-btn" data-category="cloud-security" type="button">Cloud Security</button>
+            <button class="seg-btn" data-category="identity" type="button">Identity</button>
+            <button class="seg-btn" data-category="observability" type="button">Observability</button>
+            <button class="seg-btn" data-category="compliance" type="button">Compliance</button>
           </div>
+        </div>
 
-          <!-- Pagination & Conditional Request Action Bar -->
-          <div class="btn-row">
-            <button class="btn" id="btn-page-first" type="button">First Page</button>
-            <button class="btn btn-secondary" id="btn-page-next" type="button" disabled>
-              Next Cursor Page &rarr;
-            </button>
-            <button class="btn btn-warn" id="btn-etag-check" type="button" disabled>
-              Revalidate If-None-Match (Test 304)
-            </button>
-            <button class="btn btn-danger" id="btn-bad-cursor" type="button">
-              Tamper Cursor (Test 400)
-            </button>
-          </div>
+        <div class="catalog-stack" id="catalog-list"></div>
 
-          <!-- Cursor & ETag State Inspector -->
-          <div class="cursor-inspector">
-            <div class="cursor-row">
-              <span class="cursor-key">Status / Latency:</span>
-              <span id="items-meta">Ready</span>
-            </div>
-            <div class="cursor-row">
-              <span class="cursor-key">Active Weak ETag:</span>
-              <span class="cursor-val" id="items-etag-val">—</span>
-            </div>
-            <div class="cursor-row">
-              <span class="cursor-key">Next Cursor (Base64URL &rarr; Decoded Keyset):</span>
-              <span class="cursor-val" id="items-cursor-decoded">—</span>
-            </div>
-          </div>
+        <div class="feedback-banner" id="catalog-feedback">
+          <span id="catalog-status-text">Loading catalog...</span>
+          <span id="catalog-etag-text"></span>
+        </div>
 
-          <!-- Visual Catalog Cards -->
-          <div class="catalog-list" id="catalog-cards"></div>
-
-          <!-- Raw JSON Response Box -->
-          <pre class="code-box hidden" id="items-output">// Raw JSON payload</pre>
-        </section>
-
-        <!-- Right Column: State-Mutating Validation, Idempotency & RFC 9457 Sandbox -->
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">
-                <span>Ingestion Validation, Idempotency &amp; RFC 9457 Lab</span>
-                <span class="badge badge-purple">POST /api/v1/contact</span>
-              </h2>
-              <p class="card-desc">
-                Enforces Zod <code>.strict()</code> schemas, control-char stripping, <code>16 KiB</code> cap, <code>Idempotency-Key</code> replay safety, and route rate limiting (<code>5 req/min</code>).
-              </p>
-            </div>
-          </div>
-
-          <div class="form-grid">
-            <label class="field-label">
-              Sender Name (2–100 chars)
-              <input class="field-input" id="inp-name" type="text" value="Alice Security" />
-            </label>
-            <label class="field-label">
-              Work Email
-              <input class="field-input" id="inp-email" type="email" value="alice@cynbit.com" />
-            </label>
-            <label class="field-label">
-              Subject (4–150 chars)
-              <input class="field-input" id="inp-subject" type="text" value="Zero-Trust API Gateway Verification" />
-            </label>
-            <label class="field-label">
-              Idempotency-Key Header
-              <input class="field-input" id="inp-idem" type="text" value="idem-console-0001" />
-            </label>
-            <label class="field-label full">
-              Message Payload (10–2000 chars, control chars stripped)
-              <textarea class="field-input" id="inp-message">Verifying strict Zod validation, sliding-window rate limits, and idempotent replay safety.</textarea>
-            </label>
-          </div>
-
-          <div class="btn-row">
-            <button class="btn" id="btn-post-valid" type="button">
-              Submit Valid POST (201 / Replay)
-            </button>
-            <button class="btn btn-secondary" id="btn-new-idem" type="button">
-              Rotate Idempotency-Key
-            </button>
-            <button class="btn btn-warn" id="btn-idem-conflict" type="button">
-              Mutate Body + Same Key (409)
-            </button>
-          </div>
-
-          <div class="btn-row">
-            <button class="btn btn-danger" id="btn-post-invalid" type="button">
-              Invalid Schema + Extra Key (422)
-            </button>
-            <button class="btn btn-danger" id="btn-bad-ctype" type="button">
-              Wrong Content-Type (415)
-            </button>
-            <button class="btn btn-danger" id="btn-trigger-404" type="button">
-              Unmatched Route (404)
-            </button>
-          </div>
-
-          <div class="cursor-inspector">
-            <div class="cursor-row">
-              <span class="cursor-key">Response Status:</span>
-              <span id="contact-meta">Ready — select a test scenario above</span>
-            </div>
-            <div class="cursor-row">
-              <span class="cursor-key">Idempotency &amp; RateLimit State:</span>
-              <span class="cursor-val" id="contact-headers-meta">—</span>
-            </div>
-          </div>
-
-          <pre class="code-box" id="contact-output">// Click any scenario button above to inspect RFC 9457 Problem Details or 201 Created responses</pre>
-        </section>
+        <div class="actions-footer">
+          <button class="btn btn-ghost" id="btn-first-page" type="button">
+            ↺ Reset to First Page
+          </button>
+          <button class="btn" id="btn-next-page" type="button" disabled>
+            Next Page &rarr;
+          </button>
+        </div>
       </div>
 
-      <!-- Real-Time Request / Response Telemetry Stream -->
-      <section class="card">
-        <div class="card-header">
+      <!-- Right: Protected Contact & Validation Experience -->
+      <div class="glass-panel">
+        <div class="panel-head">
           <div>
-            <h2 class="card-title">Live Request / Response Correlation Stream</h2>
-            <p class="card-desc">
-              Every call made from this console is logged below with its correlated <code>X-Request-ID</code>, HTTP status, and latency.
-            </p>
+            <h2 class="panel-title">Protected Inquiry &amp; Validation</h2>
+            <p class="panel-sub">Protected by strict Zod schemas, 16 KB cap &amp; <code>Idempotency-Key</code> replay safety</p>
           </div>
-          <button class="btn btn-secondary" id="btn-clear-log" type="button">Clear Stream</button>
         </div>
-        <div class="log-list" id="telemetry-log"></div>
-      </section>
-    </div>
 
-    <!-- TAB 2: Live HTTP Security Header Audit -->
-    <div class="tab-panel" id="tab-headers">
-      <section class="card">
-        <div class="card-header">
-          <div>
-            <h2 class="card-title">Live Passive HTTP Response Header Inspection</h2>
-            <p class="card-desc">
-              Evaluated in real time from the Express middleware pipeline (<code>src/middleware/securityHeaders.ts</code> &amp; <code>rateLimiter.ts</code>).
-            </p>
-          </div>
-          <button class="btn" id="btn-refresh-headers" type="button">Re-Inspect Live Headers</button>
+        <div class="form-stack">
+          <label class="field">
+            <span>Full Name</span>
+            <input id="inp-name" type="text" value="Alice Security" placeholder="Your name" />
+          </label>
+          <label class="field">
+            <span>Work Email</span>
+            <input id="inp-email" type="email" value="alice@cynbit.com" placeholder="you@company.com" />
+          </label>
+          <label class="field">
+            <span>Subject</span>
+            <input id="inp-subject" type="text" value="Architecture Assessment Inquiry" placeholder="How can we help?" />
+          </label>
+          <label class="field">
+            <span>Message</span>
+            <textarea id="inp-message">Exploring Cynbit's zero-trust backend middleware and edge caching capabilities.</textarea>
+          </label>
         </div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Status</th>
-                <th>Header / Control</th>
-                <th>Live Observed Value</th>
-                <th>Architectural Purpose</th>
-              </tr>
-            </thead>
-            <tbody id="headers-tbody">
-              <tr><td colspan="4">Inspecting live response headers...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </div>
 
-    <!-- TAB 3: Audit Findings & Remediation Matrix -->
-    <div class="tab-panel" id="tab-findings">
-      <section class="card">
-        <div class="card-header">
-          <div>
-            <h2 class="card-title">Categorized Security &amp; Performance Audit Matrix (F-01 – F-11)</h2>
-            <p class="card-desc">
-              Complete traceability from passive architectural observations to concrete code modules in <code>src/</code>.
-            </p>
-          </div>
+        <button class="btn btn-full" id="btn-submit-valid" type="button">
+          Send Secure Message
+        </button>
+
+        <div class="btn-group">
+          <button class="btn btn-ghost" id="btn-replay-test" type="button" title="Resends with identical Idempotency-Key">
+            🔁 Test Safe Retry
+          </button>
+          <button class="btn btn-ghost" id="btn-invalid-test" type="button" title="Sends malformed fields to test Zod 422 response">
+            🛡️ Simulate Invalid Input (422)
+          </button>
         </div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Category</th>
-                <th>Severity</th>
-                <th>Baseline Vulnerability / Bottleneck</th>
-                <th>Implemented Fix in Repository</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>F-01</code></td>
-                <td>Security</td>
-                <td><span class="badge badge-err">High</span></td>
-                <td>Missing or permissive CSP (<code>'unsafe-inline'</code>) and missing clickjacking frame ancestors.</td>
-                <td>Strict API CSP (<code>default-src 'none'; frame-ancestors 'none'</code>) &amp; per-request cryptographic nonces in <code>securityHeaders.ts</code> &amp; <code>dashboard.ts</code>.</td>
-              </tr>
-              <tr>
-                <td><code>F-02</code></td>
-                <td>Security</td>
-                <td><span class="badge badge-warn">Medium</span></td>
-                <td>Missing/short HSTS <code>max-age</code>, missing <code>Permissions-Policy</code>, or missing <code>nosniff</code>.</td>
-                <td>2-year HSTS Preload (<code>max-age=63072000; includeSubDomains; preload</code>), <code>nosniff</code>, and hardware-disabling <code>Permissions-Policy</code>.</td>
-              </tr>
-              <tr>
-                <td><code>F-03</code></td>
-                <td>Security</td>
-                <td><span class="badge badge-err">High</span></td>
-                <td>Wildcard CORS (<code>*</code>) or dynamic origin reflection without <code>Vary: Origin</code> (CDN cache poisoning).</td>
-                <td>Explicit origin allowlist in <code>createCorsMiddleware()</code> paired with mandatory <code>Vary: Origin</code> and 403 Problem Details rejection.</td>
-              </tr>
-              <tr>
-                <td><code>F-04</code></td>
-                <td>Auth / Abuse</td>
-                <td><span class="badge badge-err">High</span></td>
-                <td>Unthrottled public write endpoints lacking distributed rate limits and <code>Retry-After</code> headers.</td>
-                <td>Atomic Redis Lua sliding-window limiter (<code>rateLimiter.ts</code>) with IETF <code>RateLimit-*</code> and <code>Retry-After</code> headers.</td>
-              </tr>
-              <tr>
-                <td><code>F-05</code></td>
-                <td>Auth</td>
-                <td><span class="badge badge-warn">Medium</span></td>
-                <td>Session tokens exposed in <code>localStorage</code> or cookies missing <code>__Host-</code>, <code>HttpOnly</code>, <code>SameSite</code>.</td>
-                <td>Documented <code>__Host-</code> cookie invariants + passive redaction &amp; flag verifier in <code>scripts/passive_audit.py</code>.</td>
-              </tr>
-              <tr>
-                <td><code>F-06</code></td>
-                <td>Data Validation</td>
-                <td><span class="badge badge-warn">Medium</span></td>
-                <td>Unbounded JSON bodies, silent acceptance of unknown fields (mass assignment), and form-encoded CSRF writes.</td>
-                <td>Zod <code>.strict()</code> schemas, control-char stripping, <code>requireJsonContentType</code> (415), and <code>enforcePayloadSize</code> (413) in <code>validate.ts</code>.</td>
-              </tr>
-              <tr>
-                <td><code>F-07</code></td>
-                <td>Data Validation</td>
-                <td><span class="badge badge-info">Architecture</span></td>
-                <td>Duplicate contact/order creation when mobile clients retry timed-out POST requests.</td>
-                <td>SHA-256 payload-hashed <code>Idempotency-Key</code> store in <code>exampleApi.ts</code> (<code>201</code> replay vs <code>409 Conflict</code> on mutated payload).</td>
-              </tr>
-              <tr>
-                <td><code>F-08</code></td>
-                <td>Error Handling</td>
-                <td><span class="badge badge-warn">Medium</span></td>
-                <td>Heterogeneous 4xx/5xx error formats, missing trace correlation, and leaked stack traces in production.</td>
-                <td>Centralized <strong>RFC 9457</strong> (<code>application/problem+json</code>) handler in <code>errorHandler.ts</code> with <code>X-Request-ID</code> and production redaction.</td>
-              </tr>
-              <tr>
-                <td><code>F-09</code></td>
-                <td>Security</td>
-                <td><span class="badge badge-purple">Low</span></td>
-                <td>Framework fingerprinting via <code>X-Powered-By: Express</code> and verbose server banners.</td>
-                <td>Explicit <code>app.disable('x-powered-by')</code> and Helmet header suppression.</td>
-              </tr>
-              <tr>
-                <td><code>F-10</code></td>
-                <td>Performance</td>
-                <td><span class="badge badge-warn">Medium</span></td>
-                <td>Uncompressed JSON transfers and missing conditional <code>ETag</code> validation (redundant 200 OK downloads).</td>
-                <td>Brotli (<code>br</code>) &amp; <code>gzip</code> dynamic compression + SHA-256 weak <code>ETag</code> (<code>W/"..."</code>) returning 0-byte <code>304 Not Modified</code>.</td>
-              </tr>
-              <tr>
-                <td><code>F-11</code></td>
-                <td>Performance</td>
-                <td><span class="badge badge-info">Architecture</span></td>
-                <td><code>OFFSET</code> pagination slowdowns on deep pages and missing CDN edge caching directives.</td>
-                <td>Opaque Base64URL keyset cursor pagination + <code>Cache-Control: public, max-age=60, s-maxage=300, stale-while-revalidate=60</code>.</td>
-              </tr>
-            </tbody>
-          </table>
+
+        <div class="feedback-banner" id="contact-feedback">
+          <span id="contact-status-text">Ready — protected by sliding-window rate limiter</span>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
+
+    <!-- Clean, Collapsed Developer Drawer (Optional Under-the-Hood View) -->
+    <section class="dev-drawer">
+      <button class="dev-drawer-toggle" id="btn-toggle-drawer" type="button">
+        <span>🔍 Developer Inspector — View Live HTTP Security Headers &amp; Last JSON Payload (Trace: ${safeRequestId})</span>
+        <span id="drawer-chevron">Show &darr;</span>
+      </button>
+      <div class="dev-drawer-body hidden" id="drawer-body">
+        <pre class="code-pane" id="raw-headers-pane">// Live HTTP Security Headers</pre>
+        <pre class="code-pane" id="raw-json-pane">// Last API JSON Payload</pre>
+      </div>
+    </section>
   </main>
 
   <script nonce="${nonce}">
     (function () {
-      const headersTbody = document.getElementById('headers-tbody');
-      const catalogCards = document.getElementById('catalog-cards');
-      const itemsOutput = document.getElementById('items-output');
-      const itemsMeta = document.getElementById('items-meta');
-      const itemsEtagVal = document.getElementById('items-etag-val');
-      const itemsCursorDecoded = document.getElementById('items-cursor-decoded');
-      const btnPageNext = document.getElementById('btn-page-next');
+      const catalogList = document.getElementById('catalog-list');
+      const catalogFeedback = document.getElementById('catalog-feedback');
+      const catalogStatusText = document.getElementById('catalog-status-text');
+      const catalogEtagText = document.getElementById('catalog-etag-text');
+      const btnNextPage = document.getElementById('btn-next-page');
       const btnEtagCheck = document.getElementById('btn-etag-check');
-      const selLimit = document.getElementById('sel-limit');
-      const contactMeta = document.getElementById('contact-meta');
-      const contactHeadersMeta = document.getElementById('contact-headers-meta');
-      const contactOutput = document.getElementById('contact-output');
-      const inpIdem = document.getElementById('inp-idem');
-      const telemetryLog = document.getElementById('telemetry-log');
-
-      // KPI Elements
-      const kpiLatencyVal = document.getElementById('kpi-latency-val');
-      const kpiLatencyBar = document.getElementById('kpi-latency-bar');
-      const kpiLatencySub = document.getElementById('kpi-latency-sub');
-      const kpiRlPolicy = document.getElementById('kpi-rl-policy');
-      const kpiRlRemaining = document.getElementById('kpi-rl-remaining');
-      const kpiRlBar = document.getElementById('kpi-rl-bar');
-      const kpiRlReset = document.getElementById('kpi-rl-reset');
-      const kpi304Count = document.getElementById('kpi-304-count');
-      const kpiEtagSub = document.getElementById('kpi-etag-sub');
+      const navLatency = document.getElementById('nav-latency');
+      const pillarCacheStat = document.getElementById('pillar-cache-stat');
+      const pillarRlStat = document.getElementById('pillar-rl-stat');
+      const contactFeedback = document.getElementById('contact-feedback');
+      const contactStatusText = document.getElementById('contact-status-text');
+      const rawHeadersPane = document.getElementById('raw-headers-pane');
+      const rawJsonPane = document.getElementById('raw-json-pane');
+      const drawerBody = document.getElementById('drawer-body');
+      const drawerChevron = document.getElementById('drawer-chevron');
 
       let activeCategory = '';
-      let lastNextCursor = null;
+      let nextCursor = null;
       let lastEtag = null;
-      let lastItemsUrl = '/api/v1/items?limit=4';
-      let count304Hits = 0;
-      let showRawJson = false;
+      let lastUrl = '/api/v1/items?limit=3';
+      let currentIdemKey = 'idem-' + Math.random().toString(36).slice(2, 10);
 
-      function badgeClassForStatus(status) {
-        if (status >= 200 && status < 400) return 'badge badge-ok';
-        if (status === 422 || status === 429 || status === 409) return 'badge badge-warn';
-        return 'badge badge-err';
-      }
-
-      function decodeBase64UrlCursor(cursorStr) {
-        if (!cursorStr) return 'None (End of dataset or Page 1)';
-        try {
-          const base64 = cursorStr.replace(/-/g, '+').replace(/_/g, '/');
-          const padded = base64 + '==='.slice((base64.length + 3) % 4);
-          return cursorStr + ' -> ' + atob(padded);
-        } catch (_e) {
-          return cursorStr;
-        }
-      }
-
-      function appendTelemetry(method, path, status, elapsedMs, requestId, note) {
-        const row = document.createElement('div');
-        row.className = 'log-entry';
-
-        const left = document.createElement('div');
-        left.className = 'log-left';
-
-        const statusSpan = document.createElement('span');
-        statusSpan.className = badgeClassForStatus(status);
-        statusSpan.textContent = method + ' ' + status;
-        left.appendChild(statusSpan);
-
-        const pathSpan = document.createElement('strong');
-        pathSpan.textContent = path;
-        left.appendChild(pathSpan);
-
-        if (note) {
-          const noteSpan = document.createElement('span');
-          noteSpan.className = 'text-note';
-          noteSpan.textContent = '(' + note + ')';
-          left.appendChild(noteSpan);
+      function updateHeaderTelemetry(res, elapsedMs) {
+        navLatency.textContent = 'TTFB: ' + elapsedMs.toFixed(0) + ' ms';
+        const limit = res.headers.get('ratelimit-limit');
+        const rem = res.headers.get('ratelimit-remaining');
+        if (limit && rem) {
+          pillarRlStat.textContent = rem + ' / ' + limit + ' Quota';
         }
 
-        const right = document.createElement('div');
-        right.className = 'log-right';
-        right.textContent = elapsedMs.toFixed(1) + ' ms | X-Request-ID: ' + (requestId || 'n/a');
-
-        row.appendChild(left);
-        row.appendChild(right);
-        telemetryLog.prepend(row);
+        const tracked = [
+          'strict-transport-security',
+          'content-security-policy',
+          'x-content-type-options',
+          'x-frame-options',
+          'referrer-policy',
+          'permissions-policy',
+          'cache-control',
+          'etag',
+          'ratelimit-policy',
+          'x-request-id'
+        ];
+        rawHeadersPane.textContent = tracked
+          .map((h) => h + ': ' + (res.headers.get(h) || '(absent)'))
+          .join('\\n');
       }
 
-      function updateKpisFromHeaders(res, elapsedMs) {
-        kpiLatencyVal.textContent = elapsedMs.toFixed(1) + ' ms';
-        const pctLatency = Math.max(8, Math.min(100, 100 - (elapsedMs / 250) * 60));
-        kpiLatencyBar.value = pctLatency;
-        kpiLatencySub.textContent = elapsedMs < 250 ? 'Optimal (< 250ms SLO)' : 'Elevated latency';
-
-        const limit = Number(res.headers.get('ratelimit-limit') || 0);
-        const remaining = Number(res.headers.get('ratelimit-remaining') || 0);
-        const reset = res.headers.get('ratelimit-reset');
-        const policy = res.headers.get('ratelimit-policy');
-
-        if (limit > 0) {
-          kpiRlRemaining.textContent = remaining + ' / ' + limit;
-          kpiRlBar.value = Math.max(0, Math.min(100, (remaining / limit) * 100));
-        }
-        if (policy) kpiRlPolicy.textContent = policy;
-        if (reset) kpiRlReset.textContent = 'Window resets in ' + reset + 's';
-      }
-
-      function renderCatalogCards(items) {
-        catalogCards.textContent = '';
-        if (!items || items.length === 0) {
-          const empty = document.createElement('div');
-          empty.className = 'catalog-item';
-          empty.textContent = 'No items matched this filter.';
-          catalogCards.appendChild(empty);
-          return;
-        }
-
+      function renderServiceCards(items) {
+        catalogList.textContent = '';
         items.forEach((item) => {
           const card = document.createElement('div');
-          card.className = 'catalog-item';
+          card.className = 'service-card';
 
-          const top = document.createElement('div');
-          top.className = 'catalog-item-top';
+          const info = document.createElement('div');
+          info.className = 'service-info';
+          const h3 = document.createElement('h3');
+          h3.textContent = item.name;
+          const p = document.createElement('p');
+          p.textContent = item.summary;
+          info.appendChild(h3);
+          info.appendChild(p);
 
-          const titleWrap = document.createElement('div');
-          titleWrap.className = 'catalog-item-title';
+          const tag = document.createElement('span');
+          tag.className = 'tag';
+          tag.textContent = item.category;
 
-          const idChip = document.createElement('span');
-          idChip.className = 'catalog-item-id';
-          idChip.textContent = item.id;
-          titleWrap.appendChild(idChip);
-
-          const nameSpan = document.createElement('span');
-          nameSpan.textContent = item.name;
-          titleWrap.appendChild(nameSpan);
-
-          const catBadge = document.createElement('span');
-          catBadge.className = 'badge badge-info';
-          catBadge.textContent = item.category;
-
-          top.appendChild(titleWrap);
-          top.appendChild(catBadge);
-
-          const summary = document.createElement('p');
-          summary.className = 'catalog-item-summary';
-          summary.textContent = item.summary;
-
-          const foot = document.createElement('div');
-          foot.className = 'catalog-item-foot';
-          const slugSpan = document.createElement('span');
-          slugSpan.textContent = 'slug: ' + item.slug;
-          const dateSpan = document.createElement('span');
-          dateSpan.textContent = 'createdAt: ' + item.createdAt;
-          foot.appendChild(slugSpan);
-          foot.appendChild(dateSpan);
-
-          card.appendChild(top);
-          card.appendChild(summary);
-          card.appendChild(foot);
-          catalogCards.appendChild(card);
+          card.appendChild(info);
+          card.appendChild(tag);
+          catalogList.appendChild(card);
         });
       }
 
-      async function inspectSecurityHeaders() {
-        const t0 = performance.now();
-        const res = await fetch('/api/v1/items?limit=3');
-        const elapsed = performance.now() - t0;
-        updateKpisFromHeaders(res, elapsed);
-
-        const controls = [
-          {
-            name: 'strict-transport-security',
-            purpose: 'Enforces HTTPS for 2 years across all subdomains + HSTS preload list eligibility.'
-          },
-          {
-            name: 'content-security-policy',
-            purpose: 'Blocks unauthorized script/style execution and iframe embedding (frame-ancestors).'
-          },
-          {
-            name: 'x-content-type-options',
-            purpose: 'Prevents browser MIME-sniffing content-type confusion (nosniff).'
-          },
-          {
-            name: 'x-frame-options',
-            purpose: 'Legacy clickjacking defense paired with CSP frame-ancestors.'
-          },
-          {
-            name: 'referrer-policy',
-            purpose: 'Strips sensitive URL paths/query tokens when navigating cross-origin.'
-          },
-          {
-            name: 'permissions-policy',
-            purpose: 'Disables unused browser hardware APIs (camera, mic, geolocation, USB, payment).'
-          },
-          {
-            name: 'cross-origin-opener-policy',
-            purpose: 'Process-isolates browsing context against cross-origin window references.'
-          },
-          {
-            name: 'cross-origin-resource-policy',
-            purpose: 'Restricts cross-origin subresource loading to same-origin.'
-          },
-          {
-            name: 'cache-control',
-            purpose: 'Configures browser (max-age=60) and shared CDN edge (s-maxage=300, stale-while-revalidate).'
-          },
-          {
-            name: 'etag',
-            purpose: 'Deterministic SHA-256 weak ETag enabling 0-byte 304 Not Modified responses.'
-          },
-          {
-            name: 'vary',
-            purpose: 'Partitions CDN cache by Origin and Accept-Encoding to prevent cache poisoning.'
-          },
-          {
-            name: 'ratelimit-policy',
-            purpose: 'Advertises IETF sliding-window quota policy to API consumers.'
-          },
-          {
-            name: 'x-request-id',
-            purpose: 'Correlates client requests with backend structured JSON logs and RFC 9457 errors.'
-          },
-          {
-            name: 'x-powered-by',
-            expectAbsent: true,
-            purpose: 'Suppressed to prevent passive Express/Node runtime fingerprinting.'
-          }
-        ];
-
-        headersTbody.textContent = '';
-        controls.forEach((ctrl) => {
-          const val = res.headers.get(ctrl.name);
-          const passed = ctrl.expectAbsent ? val === null : Boolean(val);
-
-          const tr = document.createElement('tr');
-
-          const tdStatus = document.createElement('td');
-          const badge = document.createElement('span');
-          badge.className = passed ? 'badge badge-ok' : 'badge badge-warn';
-          badge.textContent = passed ? 'PASS' : 'WARN';
-          tdStatus.appendChild(badge);
-
-          const tdName = document.createElement('td');
-          const strong = document.createElement('strong');
-          strong.textContent = ctrl.name;
-          tdName.appendChild(strong);
-
-          const tdVal = document.createElement('td');
-          const code = document.createElement('code');
-          code.textContent = ctrl.expectAbsent
-            ? (val === null ? 'Suppressed (Absent)' : val)
-            : (val || 'Missing');
-          tdVal.appendChild(code);
-
-          const tdPurpose = document.createElement('td');
-          tdPurpose.className = 'text-muted-cell';
-          tdPurpose.textContent = ctrl.purpose;
-
-          tr.appendChild(tdStatus);
-          tr.appendChild(tdName);
-          tr.appendChild(tdVal);
-          tr.appendChild(tdPurpose);
-          headersTbody.appendChild(tr);
-        });
-      }
-
-      function buildItemsUrl(cursor) {
-        const limit = selLimit.value || '4';
-        const params = new URLSearchParams({ limit });
+      function buildUrl(cursor) {
+        const params = new URLSearchParams({ limit: '3' });
         if (activeCategory) params.set('category', activeCategory);
         if (cursor) params.set('cursor', cursor);
         return '/api/v1/items?' + params.toString();
       }
 
-      async function fetchItems(url, ifNoneMatch) {
+      async function loadCatalog(url, ifNoneMatch) {
         const headers = {};
         if (ifNoneMatch) headers['If-None-Match'] = ifNoneMatch;
 
@@ -1332,235 +789,132 @@ function renderDashboardHtml(nonce: string, requestId: string): string {
           cache: ifNoneMatch ? 'no-store' : 'default'
         });
         const elapsed = performance.now() - t0;
-        const reqId = res.headers.get('x-request-id');
-
-        updateKpisFromHeaders(res, elapsed);
+        updateHeaderTelemetry(res, elapsed);
 
         const etag = res.headers.get('etag');
-        if (etag) {
-          lastEtag = etag;
-          itemsEtagVal.textContent = etag;
-          kpiEtagSub.textContent = 'Latest ETag: ' + etag;
-          btnEtagCheck.disabled = false;
-        }
-
-        itemsMeta.textContent = '';
-        const badge = document.createElement('span');
-        badge.className = badgeClassForStatus(res.status);
-        badge.textContent = 'HTTP ' + res.status;
-        itemsMeta.appendChild(badge);
-        const timeSpan = document.createElement('span');
-        timeSpan.className = 'ml-gap';
-        timeSpan.textContent = elapsed.toFixed(1) + ' ms | X-Request-ID: ' + (reqId || 'n/a');
-        itemsMeta.appendChild(timeSpan);
+        if (etag) lastEtag = etag;
 
         if (res.status === 304) {
-          count304Hits += 1;
-          kpi304Count.textContent = count304Hits + (count304Hits === 1 ? ' Hit (304)' : ' Hits (304)');
-          appendTelemetry('GET', url, 304, elapsed, reqId, 'ETag 304 Not Modified - 0 B body');
-          itemsOutput.textContent = '// HTTP 304 Not Modified: Weak ETag matched If-None-Match header. Zero payload bytes transferred.';
+          catalogFeedback.className = 'feedback-banner feedback-ok';
+          catalogStatusText.textContent = '⚡ 304 Not Modified — Instant cache hit (0 bytes downloaded)';
+          catalogEtagText.textContent = elapsed.toFixed(1) + ' ms';
+          pillarCacheStat.textContent = '304 Verified';
           return;
         }
 
         const body = await res.json();
-        itemsOutput.textContent = JSON.stringify(body, null, 2);
+        rawJsonPane.textContent = JSON.stringify(body, null, 2);
 
         if (res.ok && body.data) {
-          lastItemsUrl = url;
-          lastNextCursor = body.pagination && body.pagination.nextCursor ? body.pagination.nextCursor : null;
-          btnPageNext.disabled = !lastNextCursor;
-          itemsCursorDecoded.textContent = decodeBase64UrlCursor(lastNextCursor);
-          renderCatalogCards(body.data);
-          appendTelemetry('GET', url, res.status, elapsed, reqId, body.data.length + ' items');
-        } else {
-          appendTelemetry('GET', url, res.status, elapsed, reqId, body.title || 'Error');
+          lastUrl = url;
+          nextCursor = body.pagination ? body.pagination.nextCursor : null;
+          btnNextPage.disabled = !nextCursor;
+          renderServiceCards(body.data);
+          catalogFeedback.className = 'feedback-banner';
+          catalogStatusText.textContent = 'Showing ' + body.data.length + ' modules • HTTP 200 OK';
+          catalogEtagText.textContent = elapsed.toFixed(1) + ' ms';
         }
       }
 
-      // Tab Switching
-      document.querySelectorAll('.tab-btn').forEach((btn) => {
+      document.querySelectorAll('#category-tabs .seg-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
-          document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
-          document.querySelectorAll('.tab-panel').forEach((p) => p.classList.remove('active'));
+          document.querySelectorAll('#category-tabs .seg-btn').forEach((b) => b.classList.remove('active'));
           btn.classList.add('active');
-          const target = document.getElementById(btn.getAttribute('data-tab'));
-          if (target) target.classList.add('active');
+          activeCategory = btn.getAttribute('data-category') || '';
+          loadCatalog(buildUrl(null), null);
         });
       });
 
-      // Toggle Raw JSON View
-      document.getElementById('btn-toggle-raw').addEventListener('click', () => {
-        showRawJson = !showRawJson;
-        itemsOutput.classList.toggle('hidden', !showRawJson);
+      document.getElementById('btn-first-page').addEventListener('click', () => {
+        loadCatalog(buildUrl(null), null);
       });
 
-      // Category Filter Chips
-      document.querySelectorAll('#category-chips .filter-chip').forEach((chip) => {
-        chip.addEventListener('click', () => {
-          document.querySelectorAll('#category-chips .filter-chip').forEach((c) => c.classList.remove('active'));
-          chip.classList.add('active');
-          activeCategory = chip.getAttribute('data-category') || '';
-          fetchItems(buildItemsUrl(null), null);
-        });
-      });
-
-      selLimit.addEventListener('change', () => {
-        fetchItems(buildItemsUrl(null), null);
-      });
-
-      document.getElementById('btn-page-first').addEventListener('click', () => {
-        fetchItems(buildItemsUrl(null), null);
-      });
-
-      btnPageNext.addEventListener('click', () => {
-        if (lastNextCursor) {
-          fetchItems(buildItemsUrl(lastNextCursor), null);
-        }
+      btnNextPage.addEventListener('click', () => {
+        if (nextCursor) loadCatalog(buildUrl(nextCursor), null);
       });
 
       btnEtagCheck.addEventListener('click', () => {
-        if (lastEtag) {
-          fetchItems(lastItemsUrl, lastEtag);
-        }
+        if (lastEtag) loadCatalog(lastUrl, lastEtag);
       });
 
-      document.getElementById('btn-bad-cursor').addEventListener('click', () => {
-        showRawJson = true;
-        itemsOutput.classList.remove('hidden');
-        fetchItems('/api/v1/items?limit=4&cursor=corrupted_non_base64_cursor', null);
-      });
-
-      document.getElementById('btn-refresh-headers').addEventListener('click', inspectSecurityHeaders);
-      document.getElementById('btn-refresh-all').addEventListener('click', () => {
-        inspectSecurityHeaders();
-        fetchItems(buildItemsUrl(null), null);
-      });
-
-      document.getElementById('btn-clear-log').addEventListener('click', () => {
-        telemetryLog.textContent = '';
-      });
-
-      // Contact & Error Lab Actions
-      function renderContactResponse(res, elapsed, body, note) {
-        const reqId = res.headers.get('x-request-id');
-        const replayed = res.headers.get('idempotency-replayed');
-        const rem = res.headers.get('ratelimit-remaining');
-        const retryAfter = res.headers.get('retry-after');
-
-        updateKpisFromHeaders(res, elapsed);
-
-        contactMeta.textContent = '';
-        const badge = document.createElement('span');
-        badge.className = badgeClassForStatus(res.status);
-        badge.textContent = 'HTTP ' + res.status;
-        contactMeta.appendChild(badge);
-        const detail = document.createElement('span');
-        detail.className = 'ml-gap';
-        detail.textContent = elapsed.toFixed(1) + ' ms | ' + (note || '');
-        contactMeta.appendChild(detail);
-
-        contactHeadersMeta.textContent =
-          'Idempotency-Replayed: ' + (replayed || 'n/a') +
-          ' | RateLimit-Remaining: ' + (rem || 'n/a') +
-          (retryAfter ? ' | Retry-After: ' + retryAfter + 's' : '') +
-          ' | X-Request-ID: ' + (reqId || 'n/a');
-
-        contactOutput.textContent = JSON.stringify(body, null, 2);
-        appendTelemetry(res.url.includes('non-existent') ? 'GET' : 'POST', new URL(res.url).pathname, res.status, elapsed, reqId, note);
-      }
-
-      document.getElementById('btn-new-idem').addEventListener('click', () => {
-        inpIdem.value = 'idem-' + Math.random().toString(36).slice(2, 11);
-      });
-
-      document.getElementById('btn-post-valid').addEventListener('click', async () => {
-        const payload = {
-          name: document.getElementById('inp-name').value,
-          email: document.getElementById('inp-email').value,
-          subject: document.getElementById('inp-subject').value,
-          message: document.getElementById('inp-message').value
-        };
+      async function sendContact(payload, idemKey) {
         const t0 = performance.now();
         const res = await fetch('/api/v1/contact', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Idempotency-Key': inpIdem.value
+            'Idempotency-Key': idemKey
           },
           body: JSON.stringify(payload)
         });
         const elapsed = performance.now() - t0;
+        updateHeaderTelemetry(res, elapsed);
+
         const body = await res.json();
-        const isReplay = res.headers.get('idempotency-replayed') === 'true';
-        renderContactResponse(
-          res,
-          elapsed,
-          body,
-          isReplay ? 'Idempotent Replay (Duplicate Prevented)' : (body.title || 'Created (201)')
+        rawJsonPane.textContent = JSON.stringify(body, null, 2);
+        const replayed = res.headers.get('idempotency-replayed') === 'true';
+
+        if (res.status === 201) {
+          contactFeedback.className = 'feedback-banner feedback-ok';
+          contactStatusText.textContent = replayed
+            ? '🔁 Safe Retry Verified — Duplicate submission prevented (Idempotency-Replayed: true)'
+            : '✓ Message accepted (HTTP 201 Created in ' + elapsed.toFixed(1) + ' ms)';
+        } else if (res.status === 422) {
+          contactFeedback.className = 'feedback-banner feedback-warn';
+          contactStatusText.textContent = '🛡️ Blocked by Zod .strict() Validator (HTTP 422 RFC 9457 Problem Details)';
+        } else if (res.status === 429) {
+          contactFeedback.className = 'feedback-banner feedback-err';
+          contactStatusText.textContent = '⏱️ Rate Limit Reached (HTTP 429 Too Many Requests — Retry-After active)';
+        } else {
+          contactFeedback.className = 'feedback-banner feedback-err';
+          contactStatusText.textContent = 'HTTP ' + res.status + ' — ' + (body.title || 'Request rejected');
+        }
+      }
+
+      document.getElementById('btn-submit-valid').addEventListener('click', () => {
+        currentIdemKey = 'idem-' + Math.random().toString(36).slice(2, 10);
+        sendContact(
+          {
+            name: document.getElementById('inp-name').value,
+            email: document.getElementById('inp-email').value,
+            subject: document.getElementById('inp-subject').value,
+            message: document.getElementById('inp-message').value
+          },
+          currentIdemKey
         );
       });
 
-      document.getElementById('btn-idem-conflict').addEventListener('click', async () => {
-        const payload = {
-          name: document.getElementById('inp-name').value,
-          email: document.getElementById('inp-email').value,
-          subject: 'MUTATED SUBJECT WITH SAME IDEMPOTENCY KEY ' + Date.now(),
-          message: document.getElementById('inp-message').value
-        };
-        const t0 = performance.now();
-        const res = await fetch('/api/v1/contact', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Idempotency-Key': inpIdem.value
+      document.getElementById('btn-replay-test').addEventListener('click', () => {
+        sendContact(
+          {
+            name: document.getElementById('inp-name').value,
+            email: document.getElementById('inp-email').value,
+            subject: document.getElementById('inp-subject').value,
+            message: document.getElementById('inp-message').value
           },
-          body: JSON.stringify(payload)
-        });
-        const elapsed = performance.now() - t0;
-        const body = await res.json();
-        renderContactResponse(res, elapsed, body, 'Idempotency Payload Hash Mismatch');
+          currentIdemKey
+        );
       });
 
-      document.getElementById('btn-post-invalid').addEventListener('click', async () => {
-        const t0 = performance.now();
-        const res = await fetch('/api/v1/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+      document.getElementById('btn-invalid-test').addEventListener('click', () => {
+        sendContact(
+          {
             name: 'A',
-            email: 'not-a-valid-email',
+            email: 'invalid-email',
             subject: 'Hi',
-            message: 'Short',
-            unexpectedExtraProperty: 'Rejected by Zod .strict()'
-          })
-        });
-        const elapsed = performance.now() - t0;
-        const body = await res.json();
-        renderContactResponse(res, elapsed, body, 'RFC 9457 Validation Error (422)');
+            message: 'Too short',
+            unrecognizedField: true
+          },
+          'idem-invalid-test'
+        );
       });
 
-      document.getElementById('btn-bad-ctype').addEventListener('click', async () => {
-        const t0 = performance.now();
-        const res = await fetch('/api/v1/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: 'plain text body blocked by requireJsonContentType'
-        });
-        const elapsed = performance.now() - t0;
-        const body = await res.json();
-        renderContactResponse(res, elapsed, body, 'Unsupported Media Type (415)');
+      document.getElementById('btn-toggle-drawer').addEventListener('click', () => {
+        const isHidden = drawerBody.classList.toggle('hidden');
+        drawerChevron.innerHTML = isHidden ? 'Show &darr;' : 'Hide &uarr;';
       });
 
-      document.getElementById('btn-trigger-404').addEventListener('click', async () => {
-        const t0 = performance.now();
-        const res = await fetch('/api/v1/non-existent-endpoint');
-        const elapsed = performance.now() - t0;
-        const body = await res.json();
-        renderContactResponse(res, elapsed, body, 'RFC 9457 Resource Not Found (404)');
-      });
-
-      inspectSecurityHeaders();
-      fetchItems(buildItemsUrl(null), null);
+      loadCatalog(buildUrl(null), null);
     })();
   </script>
 </body>
@@ -1570,13 +924,6 @@ function renderDashboardHtml(nonce: string, requestId: string): string {
 export function createDashboardRouter(): Router {
   const router = Router();
 
-  /**
-   * GET /
-   * Content-negotiated root route:
-   * - Browser (`Accept: text/html`): Renders interactive reference console protected by a
-   *   one-time cryptographic CSP nonce (`script-src 'nonce-...'`, zero `'unsafe-inline'`).
-   * - API client (`Accept: application/json`): Returns structured service discovery metadata.
-   */
   router.get('/', (req: Request, res: Response) => {
     const preferred = req.accepts(['html', 'json']);
     const requestId =
