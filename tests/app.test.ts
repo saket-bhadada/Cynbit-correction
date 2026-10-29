@@ -38,6 +38,27 @@ describe('Cynbit Hardened Backend Reference Architecture', () => {
     });
   });
 
+  it('serves a CSP-nonce-protected interactive console on GET / for browsers and JSON manifest for API clients', async () => {
+    const htmlRes = await fetch(`${baseUrl}/`, {
+      headers: { Accept: 'text/html' },
+    });
+    assert.equal(htmlRes.status, 200);
+    assert.match(htmlRes.headers.get('content-type') ?? '', /text\/html/);
+    const csp = htmlRes.headers.get('content-security-policy') ?? '';
+    assert.match(csp, /script-src 'nonce-[A-Za-z0-9+/=]+'/);
+    assert.doesNotMatch(csp, /unsafe-inline/);
+    const htmlBody = await htmlRes.text();
+    assert.match(htmlBody, /Cynbit — Hardened Backend Reference Architecture/);
+
+    const jsonRes = await fetch(`${baseUrl}/`, {
+      headers: { Accept: 'application/json' },
+    });
+    assert.equal(jsonRes.status, 200);
+    const manifest = (await jsonRes.json()) as { status: string; endpoints: Record<string, string> };
+    assert.equal(manifest.status, 'operational');
+    assert.ok(manifest.endpoints.catalogItems);
+  });
+
   it('sets strict HTTP security headers, removes X-Powered-By, and echoes validated X-Request-ID', async () => {
     const customRequestId = 'audit-req-12345678';
     const res = await fetch(`${baseUrl}/healthz`, {

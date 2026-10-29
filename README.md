@@ -40,6 +40,7 @@ Full architectural analysis, categorized findings matrix, and target Mermaid seq
 │   │   ├── securityHeaders.ts      # Strict Helmet CSP/HSTS, Permissions-Policy & allowlist CORS
 │   │   └── validate.ts             # Zod .strict() validation, sanitization & byte-size guards
 │   └── routes/
+│       ├── dashboard.ts            # Interactive root console (GET /) with cryptographic CSP nonce
 │       └── exampleApi.ts           # Keyset cursor pagination, weak ETag (304) & Idempotency-Key
 └── tests/
     └── app.test.ts                 # Automated integration test suite (node:test)
@@ -66,7 +67,7 @@ npm run typecheck
 # Execute the automated security & performance integration tests
 npm test
 
-# Start the development server (defaults to http://localhost:3000)
+# Start the development server and open http://localhost:3000 in your browser
 cp .env.example .env
 npm run dev
 ```

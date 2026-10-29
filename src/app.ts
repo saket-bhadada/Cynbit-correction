@@ -12,6 +12,7 @@ import {
   createSecurityHeadersMiddleware,
   type SecurityMiddlewareOptions,
 } from './middleware/securityHeaders';
+import { createDashboardRouter } from './routes/dashboard';
 import { createExampleApiRouter } from './routes/exampleApi';
 
 export interface AppConfig {
@@ -78,7 +79,8 @@ export function createApp(config: AppConfig = {}): Express {
     }),
   );
 
-  // 7. Reference versioned API routes
+  // 7. Interactive CSP-nonce root console & versioned API routes
+  app.use(createDashboardRouter());
   app.use(
     createExampleApiRouter({
       rateLimitStore: config.rateLimitStore,
